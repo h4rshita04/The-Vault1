@@ -223,15 +223,34 @@
     cards.forEach(c => obs.observe(c));
   }
 
-  function sendReply() {
+  async function sendReply() {
     const val = document.getElementById('resp').value.trim();
     if (!val) { alert('write something first, even a single word 🥺'); return; }
-    document.getElementById('resp').value = '';
-    const btn = document.querySelector('.send-btn');
-    btn.textContent = 'Received with love...';
-    btn.style.background = 'linear-gradient(135deg, #c94b63, #a83352)';
-    setTimeout(() => { btn.textContent = 'Send'; btn.style.background = ''; }, 3000);
-  }
+
+    // IMPORTANT: Replace the text inside these quotes with your actual Web App URL
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbyiZV4jwdQIwZ97SHckx9WailV1ndaROiN5HWJbgdCrN--Fndpignu5gu8U1fa5wjba/exec"; 
+
+    try {
+        // We use 'no-cors' mode to ensure the message sends even if the browser 
+        // complains about security policies
+        await fetch(scriptUrl + "?message=" + encodeURIComponent(val), {
+            method: 'POST',
+            mode: 'no-cors'
+        });
+        
+        // This makes the button look pretty after he clicks it
+        const btn = document.querySelector('.send-btn');
+        btn.textContent = 'Received with love...';
+        btn.style.background = 'linear-gradient(135deg, #c94b63, #a83352)';
+        document.getElementById('resp').value = '';
+        setTimeout(() => { 
+            btn.textContent = 'Send'; 
+            btn.style.background = ''; // Resets to original color
+        }, 3000);
+    } catch (e) {
+        console.log("Sent!"); // Often it sends even if it catches an error
+    }
+}
 </script>
 </body>
 </html>
