@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Private Vault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #D4AF37; --bg: #0D0D0D; --card: #161616; --text: #E0E0E0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        #lock-screen { text-align: center; transition: opacity 0.8s ease; }
+        input { background: transparent; border: none; border-bottom: 2px solid var(--gold); color: white; font-size: 1.5rem; text-align: center; outline: none; padding: 10px; font-family: 'Playfair Display', serif; }
+        button { background: var(--gold); border: none; padding: 12px 30px; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 30px; transition: 0.3s; }
+        #vault { display: none; width: 90%; max-width: 600px; padding: 60px 0; opacity: 0; transition: opacity 1s ease; }
+        .greeting { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--gold); margin-bottom: 40px; border-left: 4px solid var(--gold); padding-left: 20px; font-style: italic; }
+        .exhibit { background: var(--card); padding: 35px; border-radius: 15px; border: 1px solid #222; margin-bottom: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        .exhibit-label { color: var(--gold); font-size: 0.8rem; letter-spacing: 3px; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; }
+        .quote { font-style: italic; font-weight: 300; font-size: 1.1rem; line-height: 1.8; color: #FFF; }
+        .feedback { margin-top: 60px; border-top: 1px solid #333; padding-top: 30px; text-align: center; }
+        textarea { width: 100%; background: #000; color: #FFF; border: 1px solid #333; border-radius: 10px; padding: 15px; margin-top: 15px; resize: none; }
+    </style>
+</head>
+<body>
 
+    <div id="lock-screen">
+        <h2 style="font-family: 'Playfair Display'; font-style: italic;">Enter your nickname...</h2>
+        <input type="password" id="key-input" placeholder="...">
+        <br>
+        <button onclick="unlock()">Access Vault</button>
+    </div>
+
+    <div id="vault">
+        <div class="greeting">For my Ayuuu...</div>
+        <div id="display-area">Loading the Evidence...</div>
+        <div class="feedback">
+            <h3 style="color: var(--gold); font-family: 'Playfair Display';">Do you want to say anything?</h3>
+            <textarea id="resp" rows="4" placeholder="If you want to say anything back..."></textarea>
+            <button onclick="alert('Sent to Harshita\'s heart.')">Send Response</button>
+        </div>
+    </div>
+
+    <script>
+        const csvUrl = https://docs.google.com/spreadsheets/d/e/2PACX-1vR_Q0EfwJ2Y2FEFxG8cQvjWtG70XxyAeWqiJRux2Oj-ienajjdLoQ1DP6uUMpDRwHnvoB_PO69Re9xJ/pub?output=csv; 
+
+        function unlock() {
+            const val = document.getElementById('key-input').value.toLowerCase().trim();
+            if (val === 'ayuuu') {
+                document.getElementById('lock-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('lock-screen').style.display = 'none';
+                    const vault = document.getElementById('vault');
+                    vault.style.display = 'block';
+                    setTimeout(() => { vault.style.opacity = '1'; }, 50);
+                    fetchData();
+                }, 800);
+            } else { alert("Peace Denied."); }
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch(csvUrl);
+                const data = await response.text();
+                const rows = data.split('\n').slice(1);
+                const area = document.getElementById('display-area');
+                area.innerHTML = '';
+
+                rows.forEach((row, i) => {
+                    const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                    if (cols && cols.length >= 3) {
+                        const title = cols[1].replace(/"/g, "");
+                        const text = cols[2].replace(/"/g, "");
+                        area.innerHTML += `
+                            <div class="exhibit">
+                                <div class="exhibit-label">EXHIBIT ${i + 1}: ${title}</div>
+                                <p class="quote">"${text}"</p>
+                                <p style="font-size: 0.8rem; color: #666; margin-top: 20px;">Dated: ${cols[0]}</p>
+                            </div>`;
+                    }
+                });
+            } catch (e) { console.error(e); }
+        }
+    </script>
+</body>
+</html>
