@@ -152,7 +152,7 @@
         ls.style.display = 'none';
         const vault = document.getElementById('vault');
         vault.classList.add('show');
-        setTimeout(() => { vault.classList.add('visible'); fetchData(); }, 60);
+        setTimeout(() => { vault.classList.add('visible'); fetchData(); logVisit(); }, 60);
       }, 900);
     } else {
       const card = document.querySelector('.lock-card');
@@ -174,7 +174,18 @@
     }
     result.push(cur.trim()); return result;
   }
-
+  async function logVisit() {
+    const scriptUrl = "https://script.google.com/macros/s/AKfycbyiZV4jwdQIwZ97SHckx9WailV1ndaROiN5HWJbgdCrN--Fndpignu5gu8U1fa5wjba/exec"; 
+    try {
+        // Sends a specific message to your Responses sheet
+        await fetch(scriptUrl + "?message=" + encodeURIComponent("LOG: Website opened/Login success"), {
+            method: 'POST',
+            mode: 'no-cors'
+        });
+    } catch (e) {
+        console.log("Visit recorded");
+    }
+  }
   async function fetchData() {
     try {
       const res = await fetch(csvUrl);
